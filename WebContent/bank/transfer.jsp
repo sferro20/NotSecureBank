@@ -11,7 +11,9 @@
 		<%
 					com.notsecurebank.model.User user = (com.notsecurebank.model.User)request.getSession().getAttribute("user");
 				%>
-				
+		<input type="hidden" name="csrfToken"
+			value="<%=
+			request.getSession().getAttribute("csrfToken") %>">
 		<script type="text/javascript">
 		
 			function confirminput(myform) {

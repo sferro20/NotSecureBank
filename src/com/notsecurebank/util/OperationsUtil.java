@@ -22,6 +22,14 @@ public class OperationsUtil {
 
         long debitActId = 0;
 
+        //generare il token, non so come si fa
+        String csrfToken = "aaa111"; //uso un token di prova
+        String tokenIpunt = ServletUtil.getToken(request);
+        if (tokenIpunt == null || !tokenIpunt.equals(csrfToken)) {
+            LOG.error("CSRF token is invalid");
+            return "CSRF token is invalid";
+        }
+        
         User user = ServletUtil.getUser(request);
         String userName = user.getUsername();
 
