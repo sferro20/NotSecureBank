@@ -29,7 +29,7 @@ public class OperationsUtil {
             LOG.error("CSRF token is invalid");
             return "CSRF token is invalid";
         }
-        
+
         User user = ServletUtil.getUser(request);
         String userName = user.getUsername();
 
@@ -58,6 +58,8 @@ public class OperationsUtil {
                 // do nothing here. continue processing
                 LOG.warn(e.toString());
             }
+
+            //verificare che lo user che ha fatto il login sia lo stesso che sta facendo il trasferimento
 
             if (accountId > 0) {
                 for (Account account : cookieAccounts) {
