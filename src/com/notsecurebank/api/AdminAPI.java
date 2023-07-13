@@ -79,6 +79,7 @@ public class AdminAPI extends NotSecureBankAPI {
         JSONObject bodyJson = new JSONObject();
 
         // Checking if user is logged in
+        //oltre al check se user è loggato, bisogna controllare anche se è admin
 
         if (!ServletUtil.isLoggedin(request)) {
             String response = "{\"loggedIn\" : \"false\"}";
@@ -106,27 +107,31 @@ public class AdminAPI extends NotSecureBankAPI {
             LOG.error(e.toString());
             return Response.status(500).entity("{\"Error\": \"Request is not in JSON format\"}").build();
         }
+        
+        if(username == "admin"){
+            if (firstname == null || firstname.trim().length() == 0 || lastname == null || lastname.trim().length() == 0 || username == null || username.trim().length() == 0 || email == null || email.trim().length() == 0 || password1 == null || password1.trim().length() == 0 || password2 == null || password2.trim().length() == 0) {
+                LOG.error("Inserted data null or empty for addUser method.");
+                return Response.status(500).entity("{\"error\":\"An error has occurred. Please try again later.\"}").build();
+            }
 
-        if (firstname == null || firstname.trim().length() == 0 || lastname == null || lastname.trim().length() == 0 || username == null || username.trim().length() == 0 || email == null || email.trim().length() == 0 || password1 == null || password1.trim().length() == 0 || password2 == null || password2.trim().length() == 0) {
-            LOG.error("Inserted data null or empty for addUser method.");
-            return Response.status(500).entity("{\"error\":\"An error has occurred. Please try again later.\"}").build();
+            if (!password1.equals(password2)) {
+                LOG.error("Entered passwords did not match for addUser method.");
+                return Response.status(500).entity("{\"error\":\"Entered passwords did not match.\"}").build();
+            }
+
+            if (!ServletUtil.isValidEmail(email)) {
+                LOG.error("Entered email is not valid.");
+                return Response.status(500).entity("{\"error\":\"Entered email is not valid.\"}").build();
+            }
+
+            String error = DBUtil.addUser(username, password1, firstname, lastname, email);
+            if (error != null)
+                return Response.status(500).entity("{\"error\":\"" + error + "\"}").build();
+
+            return Response.status(200).entity("{\"success\":\"Requested operation has completed successfully.\"}").build();
+        }else{
+            return Response.status(500).entity("{\"error\":\" ERROR \"}").build();
         }
-
-        if (!password1.equals(password2)) {
-            LOG.error("Entered passwords did not match for addUser method.");
-            return Response.status(500).entity("{\"error\":\"Entered passwords did not match.\"}").build();
-        }
-
-        if (!ServletUtil.isValidEmail(email)) {
-            LOG.error("Entered email is not valid.");
-            return Response.status(500).entity("{\"error\":\"Entered email is not valid.\"}").build();
-        }
-
-        String error = DBUtil.addUser(username, password1, firstname, lastname, email);
-        if (error != null)
-            return Response.status(500).entity("{\"error\":\"" + error + "\"}").build();
-
-        return Response.status(200).entity("{\"success\":\"Requested operation has completed successfully.\"}").build();
     }
 
 }
