@@ -1,6 +1,8 @@
 package com.notsecurebank.servlet;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -50,9 +52,27 @@ public class AccountViewServlet extends HttpServlet {
             String startTime = request.getParameter("startDate");
             String endTime = request.getParameter("endDate");
 
-            LOG.info("Transactions within '" + startTime + "' and '" + endTime + "'.");
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/bank/transaction.jsp?" + ((startTime != null) ? "&startTime=" + startTime : "") + ((endTime != null) ? "&endTime=" + endTime : ""));
-            dispatcher.forward(request, response);
+            try {
+                if(checkData(startTime) && checkData(endTime)){
+                    LOG.info("Transactions within '" + startTime + "' and '" + endTime + "'.");
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("/bank/transaction.jsp?" + ((startTime != null) ? "&startTime=" + startTime : "") + ((endTime != null) ? "&endTime=" + endTime : ""));
+                    dispatcher.forward(request, response);
+                }
+            } catch(Exception exception){
+
+            }
         }
     }
+
+    public boolean checkData(String data) throws ParseException {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            formatter .setLenient(false) ;
+            formatter.parse(data) ;
+            return true;
+        } catch ( Exception exception) {
+            return false;
+        }
+    }
+
 }
