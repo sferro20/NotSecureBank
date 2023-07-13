@@ -438,9 +438,12 @@ public class DBUtil {
         LOG.debug("addAccount('" + username + "', '" + acctType + "')");
 
         try {
+            String query = "INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES (?,?)";
             Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES ('" + username + "','" + acctType + "', 0)");
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, username);
+            statement.setString(2, acctType);
+            statement.executeQuery();
             return null;
         } catch (SQLException e) {
             LOG.error(e.toString());
